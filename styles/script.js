@@ -39,6 +39,7 @@ function setVoice() {
 }
 
 function resetSpeedButtons() {
+    document.getElementById('speed-normal').classList.remove('active');
     document.getElementById('speed-x2').classList.remove('active');
     document.getElementById('speed-x3').classList.remove('active');
     document.getElementById('speed-x4').classList.remove('active');
@@ -73,6 +74,19 @@ document.getElementById('stop').addEventListener('click', () => {
     stopTimer();
     resetTimer();
     pausedTime = 0;
+    resetSpeedButtons();
+    document.getElementById('speed-normal').classList.add('active');
+});
+
+document.getElementById('speed-normal').addEventListener('click', () => {
+    currentRate = 1;
+    speechSynthesisUtterance.rate = currentRate;
+    if (speechSynthesis.speaking && !speechSynthesis.paused) {
+        speechSynthesis.cancel();
+        speechSynthesis.speak(speechSynthesisUtterance);
+    }
+    resetSpeedButtons();
+    document.getElementById('speed-normal').classList.add('active');
 });
 
 document.getElementById('speed-x2').addEventListener('click', () => {
@@ -114,3 +128,6 @@ speechSynthesisUtterance.onend = () => {
 
 // Load available voices and set default voice
 window.speechSynthesis.onvoiceschanged = setVoice;
+
+// Set default active speed
+document.getElementById('speed-normal').classList.add('active');
