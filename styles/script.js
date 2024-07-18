@@ -12,6 +12,22 @@ function updateTimer() {
         `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 }
 
+function startTimer() {
+    timerInterval = setInterval(() => {
+        elapsedTime++;
+        updateTimer();
+    }, 1000);
+}
+
+function stopTimer() {
+    clearInterval(timerInterval);
+}
+
+function resetTimer() {
+    elapsedTime = 0;
+    updateTimer();
+}
+
 function setVoice() {
     const voices = window.speechSynthesis.getVoices();
     for (let voice of voices) {
@@ -20,6 +36,12 @@ function setVoice() {
             break;
         }
     }
+}
+
+function resetSpeedButtons() {
+    document.getElementById('speed-x2').classList.remove('active');
+    document.getElementById('speed-x3').classList.remove('active');
+    document.getElementById('speed-x4').classList.remove('active');
 }
 
 document.getElementById('start').addEventListener('click', () => {
@@ -32,51 +54,62 @@ document.getElementById('start').addEventListener('click', () => {
         speechSynthesis.speak(speechSynthesisUtterance);
 
         elapsedTime = pausedTime;
-        timerInterval = setInterval(() => {
-            elapsedTime++;
-            updateTimer();
-        }, 1000);
+        startTimer();
     }
 });
 
 document.getElementById('pause').addEventListener('click', () => {
     speechSynthesis.pause();
-    clearInterval(timerInterval);
+    stopTimer();
 });
 
 document.getElementById('resume').addEventListener('click', () => {
     speechSynthesis.resume();
-    timerInterval = setInterval(() => {
-        elapsedTime++;
-        updateTimer();
-    }, 1000);
+    startTimer();
 });
 
 document.getElementById('stop').addEventListener('click', () => {
     speechSynthesis.cancel();
-    clearInterval(timerInterval);
+    stopTimer();
+    resetTimer();
     pausedTime = 0;
-    elapsedTime = 0;
-    updateTimer();
 });
 
 document.getElementById('speed-x2').addEventListener('click', () => {
     currentRate = 2;
     speechSynthesisUtterance.rate = currentRate;
+    if (speechSynthesis.speaking && !speechSynthesis.paused) {
+        speechSynthesis.cancel();
+        speechSynthesis.speak(speechSynthesisUtterance);
+    }
+    resetSpeedButtons();
+    document.getElementById('speed-x2').classList.add('active');
 });
 
 document.getElementById('speed-x3').addEventListener('click', () => {
     currentRate = 3;
     speechSynthesisUtterance.rate = currentRate;
+    if (speechSynthesis.speaking && !speechSynthesis.paused) {
+        speechSynthesis.cancel();
+        speechSynthesis.speak(speechSynthesisUtterance);
+    }
+    resetSpeedButtons();
+    document.getElementById('speed-x3').classList.add('active');
 });
 
 document.getElementById('speed-x4').addEventListener('click', () => {
     currentRate = 4;
     speechSynthesisUtterance.rate = currentRate;
+    if (speechSynthesis.speaking && !speechSynthesis.paused) {
+        speechSynthesis.cancel();
+        speechSynthesis.speak(speechSynthesisUtterance);
+    }
+    resetSpeedButtons();
+    document.getElementById('speed-x4').classList.add('active');
 });
 
 speechSynthesisUtterance.onend = () => {
-    clearInterval(timerInterval);
+    stopTimer();
 };
 
 // Load available voices and set default voice
